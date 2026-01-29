@@ -11,6 +11,22 @@ class Net::Multicast::PeerDiscovery v1.0.0 {
     use IO::Select;
     use Carp qw[carp croak];
     #
+    BEGIN {
+        # Polyfill for systems where Socket::pack_sockaddr_in6 is "not implemented" (e.g. some Windows runners)
+        # or missing entirely.
+        if ( !defined &pack_sockaddr_in6 || !eval { pack_sockaddr_in6( 0, "\0" x 16 ); 1 } ) {
+            no warnings 'redefine';
+            *pack_sockaddr_in6 = sub ( $port, $ip, $scope_id = 0, $flowinfo = 0 ) {
+                my $family = eval { AF_INET6() } // 23;    # Default to 23 (Win32) if missing, though risky.
+                return pack( 'S n N a16 I', $family, $port, $flowinfo, $ip, $scope_id );
+            };
+            *unpack_sockaddr_in6 = sub ($packed) {
+                my ( $family, $port, $flowinfo, $ip, $scope_id ) = unpack( 'S n N a16 I', $packed );
+                return ( $port, $ip, $scope_id, $flowinfo );
+            };
+        }
+    }
+    #
     field $port   : param = 6771;
     field $domain : param = undef;
     field $socket;

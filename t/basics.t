@@ -40,6 +40,7 @@ subtest 'IPv4 Discovery' => sub {
     is $found->{port}, 6881,           "Correct port";
 };
 subtest 'IPv6 Link-Local Discovery' => sub {
+    skip_all 'IPv6 not supported' unless eval { pack_sockaddr_in6( 0, "\0" x 16 ); 1 };
     my $discovery = Net::Multicast::PeerDiscovery->new( domain => AF_INET6 );
     my $found;
     $discovery->on( peer_found => sub { $found = shift } );
