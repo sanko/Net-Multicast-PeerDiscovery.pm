@@ -27,8 +27,8 @@ class Net::Multicast::PeerDiscovery v1.0.0 {
         }
     }
     #
-    field $port   : param = 6771;
-    field $domain : param = undef;
+    field $port   : param //= 6771;
+    field $domain : param //= undef;
     field $socket;
     field %on;
     field $available : reader(is_available) = 0;
@@ -47,11 +47,11 @@ class Net::Multicast::PeerDiscovery v1.0.0 {
                 $socket = IO::Socket::Multicast->new( LocalPort => $MCAST_PORT, Proto => 'udp', ReuseAddr => 1, Domain => $domain ) or die $!;
             }
             else {
-                $socket = IO::Socket::Multicast->new( LocalPort => $MCAST_PORT, Proto => 'udp', ReuseAddr => 1, Domain => AF_INET6 ) ||
-                    IO::Socket::Multicast->new( LocalPort => $MCAST_PORT, Proto => 'udp', ReuseAddr => 1, Domain => AF_INET );
+                $socket = IO::Socket::Multicast->new( LocalPort => $MCAST_PORT, Proto => 'udp', ReuseAddr => 1, Domain => AF_INET6 )
+                    // IO::Socket::Multicast->new( LocalPort => $MCAST_PORT, Proto => 'udp', ReuseAddr => 1, Domain => AF_INET );
             }
             die "Could not create discovery socket: $!" unless $socket;
-            $socket->mcast_add($MCAST_ADDR4) if $socket->sockdomain == AF_INET || $socket->sockdomain == AF_INET6;
+            $socket->mcast_add($MCAST_ADDR4) if $socket->sockdomain == AF_INET // $socket->sockdomain == AF_INET6;
             $socket->mcast_add($MCAST_ADDR6) if $socket->sockdomain == AF_INET6;
             $available = 1;
         }
@@ -109,9 +109,7 @@ class Net::Multicast::PeerDiscovery v1.0.0 {
                     $ip = inet_ntop( AF_INET6, $ip_bin );
 
                     # RFC 6724 / IPv6 Link-Local scope handling
-                    if ( $ip =~ /^fe80:/i && $scope_id ) {
-                        $ip .= '%' . $scope_id;
-                    }
+                    $ip .= '%' . $scope_id if $ip =~ /^fe80:/i && $scope_id;
                 }
                 $self->_emit( 'peer_found', { ip => $ip, port => $port, info_hash => pack( 'H*', $ih_hex ) } ) if $ip;
             }
