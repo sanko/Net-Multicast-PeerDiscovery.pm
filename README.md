@@ -29,13 +29,14 @@ to find neighbors on the same LAN without requiring a central registry or extern
 
 ## Dual-Stack Support
 
-This implementation is **RFC 6724 compliant** and supports both IPv4 and IPv6 multicast:
+This implementation is [RFC 6724 compliant](https://datatracker.ietf.org/doc/html/rfc6724) and supports both IPv4 and
+IPv6 multicast:
 
 - **IPv4 Group**: `239.192.152.143`
 - **IPv6 Group**: `ff15::efc0:988f` (Site-local scope)
 
-It correctly handles **IPv6 Link-Local** addresses (`fe80::/10`), preserving the `scope_id` required for local
-connectivity.
+It correctly handles [IPv6 link-local](https://en.wikipedia.org/wiki/Link-local_address#IPv6) addresses (`fe80::/10`),
+preserving the `scope_id` required for local connectivity.
 
 # METHODS
 
@@ -57,7 +58,7 @@ Listens for incoming multicast packets and processes them. Triggers `peer_found`
 Returns boolean. Requires [IO::Socket::Multicast](https://metacpan.org/pod/IO%3A%3ASocket%3A%3AMulticast). If the module is missing, discovery will gracefully disable itself
 and return false.
 
-## `on( peer_found =` sub ($info) { ... } )>
+## `on( peer_found => sub ($info) { ... } )`
 
 Registers a handler for discovered peers. `$info` is a hashref containing:
 

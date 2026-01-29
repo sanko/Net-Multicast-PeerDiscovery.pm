@@ -31,7 +31,8 @@ to find neighbors on the same LAN without requiring a central registry or extern
 
 =head2 Dual-Stack Support
 
-This implementation is B<RFC 6724 compliant> and supports both IPv4 and IPv6 multicast:
+This implementation is L<RFC 6724 compliant|https://datatracker.ietf.org/doc/html/rfc6724> and supports both IPv4 and
+IPv6 multicast:
 
 =over
 
@@ -41,8 +42,8 @@ This implementation is B<RFC 6724 compliant> and supports both IPv4 and IPv6 mul
 
 =back
 
-It correctly handles B<IPv6 Link-Local> addresses (C<fe80::/10>), preserving the C<scope_id> required for local
-connectivity.
+It correctly handles L<IPv6 link-local|https://en.wikipedia.org/wiki/Link-local_address#IPv6> addresses (C<fe80::/10>),
+preserving the C<scope_id> required for local connectivity.
 
 =head1 METHODS
 
@@ -69,7 +70,7 @@ Listens for incoming multicast packets and processes them. Triggers C<peer_found
 Returns boolean. Requires L<IO::Socket::Multicast>. If the module is missing, discovery will gracefully disable itself
 and return false.
 
-=head2 C<on( peer_found => sub ($info) { ... } )>
+=head2 C<on( peer_found =E<gt> sub ($info) { ... } )>
 
 Registers a handler for discovered peers. C<$info> is a hashref containing:
 
